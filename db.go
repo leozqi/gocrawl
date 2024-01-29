@@ -12,8 +12,8 @@ package main
 import (
     "encoding/json"
     "database/sql"
-    "hash"
-    "crc32"
+//    "hash"
+//    "hash/crc32"
 )
 
 type Webpage struct {
@@ -71,7 +71,7 @@ func InsertNode(db *sql.DB, json string) error {
     }
     defer sqlStmt.Close()
 
-    _, err := sqlStmt.Exec(json)
+    _, err = sqlStmt.Exec(json)
     if err != nil {
         return err;
     }
@@ -81,5 +81,10 @@ func InsertNode(db *sql.DB, json string) error {
 }
 
 func InsertCrawlResult(db *sql.DB, w *Webpage) error {
-    
+    b, err := json.Marshal(w);
+    if err != nil {
+        return err;
+    }
+
+    return InsertNode(db, string(b))
 }
