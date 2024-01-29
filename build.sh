@@ -1,3 +1,3 @@
 #!/bin/sh
 
-go build --tags "sqlite_fts5" main.go
+go build --tags "sqlite_fts5" *.go
