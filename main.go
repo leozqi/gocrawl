@@ -21,9 +21,9 @@ func main() {
 
     // Prepare jobs
     var job CrawlJob
-    job.url = *urlCmd
-    job.keywordTags = NewSet()
-    job.keywordTags.AddMulti("p")
+    job.Url = *urlCmd
+    job.KeywordTags = NewSet()
+    job.KeywordTags.AddMulti("p")
 
     // Attempt to initialize the webcrawler table
     if InitDbFile(db) != nil {
@@ -31,6 +31,9 @@ func main() {
         return
     }
 
-    Crawl(&job, db);
+    err = Crawl(&job, db)
+    if err != nil {
+        log.Fatal(err)
+    }
 }
 

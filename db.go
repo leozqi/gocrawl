@@ -12,14 +12,16 @@ package main
 import (
     "encoding/json"
     "database/sql"
+    "errors"
 )
 
 type Webpage struct {
-    id string // In this implementation ID doubles as URL
-    checksum string // Can change but CRC-32 seems ok, in hex encoding
-    keywords []string
-    links []string
+    Id string           `json:"id"`       // In this implementation ID doubles as URL
+    Checksum string     `json:"checksum"` // Can change but CRC-32 seems ok, in hex encoding
+    Keywords []string   `json:"keywords"`
+    Links []string      `json:"links"`
 }
+
 
 // Why use JSON?
 // Specced textual format supported by many other programs that may acces the
@@ -59,20 +61,25 @@ func InitDbFile(db *sql.DB) error {
 }
 
 func InsertNode(db *sql.DB, json string) error {
+    // Check string
+    if !(len(json) > 0) {
+        return errors.New("Empty JSON passed to InsertNode")
+    }
+
     tx, err := db.Begin()
     if err != nil {
-        return err;
+        return err
     }
 
     sqlStmt, err := tx.Prepare(`INSERT INTO nodes VALUES(json(?))`)
     if err != nil {
-        return err;
+        return err
     }
     defer sqlStmt.Close()
 
     _, err = sqlStmt.Exec(json)
     if err != nil {
-        return err;
+        return err
     }
 
     err = tx.Commit()
@@ -80,9 +87,9 @@ func InsertNode(db *sql.DB, json string) error {
 }
 
 func InsertCrawlResult(db *sql.DB, w *Webpage) error {
-    b, err := json.Marshal(w);
+    b, err := json.Marshal(w)
     if err != nil {
-        return err;
+        return err
     }
 
     return InsertNode(db, string(b))

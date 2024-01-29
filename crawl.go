@@ -17,8 +17,8 @@ import (
 )
 
 type CrawlJob struct {
-    url string
-    keywordTags *Set // HTML tags to search for keywords
+    Url string
+    KeywordTags *Set // HTML tags to search for keywords
 }
 
 
@@ -95,7 +95,7 @@ func ParseDOMString(dom string, keywordTags *Set) (*Set, *Set) {
 
 
 func Crawl(job *CrawlJob, db *sql.DB) error {
-    pageBytes, err := DownloadPage(job.url)
+    pageBytes, err := DownloadPage(job.Url)
     if err != nil {
         return err
     }
@@ -105,13 +105,9 @@ func Crawl(job *CrawlJob, db *sql.DB) error {
     hasher.Write(pageBytes)
     hash := hex.EncodeToString(hasher.Sum(nil))
 
-    keywords, links := ParseDOMString(string(pageBytes), job.keywordTags)
+    keywords, links := ParseDOMString(string(pageBytes), job.KeywordTags)
 
-    var w Webpage
-    w.id = job.url
-    w.checksum = hash
-    w.keywords = keywords.Slice()
-    w.links = links.Slice()
+    webpage := Webpage{job.Url, hash, keywords.Slice(), links.Slice()}
 
-    return InsertCrawlResult(db, &w)
+    return InsertCrawlResult(db, &webpage)
 }
