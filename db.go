@@ -12,14 +12,13 @@ package main
 import (
     "encoding/json"
     "database/sql"
-//    "hash"
-//    "hash/crc32"
 )
 
 type Webpage struct {
-    url string
-    checksum string // Can change but CRC-32 seems ok?
+    id string // In this implementation ID doubles as URL
+    checksum string // Can change but CRC-32 seems ok, in hex encoding
     keywords []string
+    links []string
 }
 
 // Why use JSON?

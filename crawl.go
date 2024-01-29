@@ -11,8 +11,9 @@ import (
     "net/http"
     "golang.org/x/net/html"
     "io/ioutil"
-    "fmt"
     "bytes"
+    "hash/crc32"
+    "encoding/hex"
 )
 
 type CrawlJob struct {
@@ -99,8 +100,18 @@ func Crawl(job *CrawlJob, db *sql.DB) error {
         return err
     }
 
-    keyword, links := ParseDOMString(string(pageBytes), job.keywordTags)
+    // Get hash of all page contents
+    hasher := crc32.NewIEEE()
+    hasher.Write(pageBytes)
+    hash := hex.EncodeToString(hasher.Sum(nil))
 
-    return nil
+    keywords, links := ParseDOMString(string(pageBytes), job.keywordTags)
+
+    var w Webpage
+    w.id = job.url
+    w.checksum = hash
+    w.keywords = keywords.Slice()
+    w.links = links.Slice()
+
+    return InsertCrawlResult(db, &w)
 }
-
