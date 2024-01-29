@@ -1,9 +1,6 @@
 // Copyright (C) 2024 Leo Qi <leo@leozqi.com>
-//
-// Use of this source code is governed by the Apache-2.0 License.
-// Full text can be found in the LICENSE file
 
-package main
+package crawler
 
 import (
     "database/sql"
@@ -14,11 +11,15 @@ import (
     "bytes"
     "hash/crc32"
     "encoding/hex"
+
+    "gocrawl/internal/graph"
+    "gocrawl/internal/utils"
 )
+
 
 type CrawlJob struct {
     Url string
-    KeywordTags *Set // HTML tags to search for keywords
+    KeywordTags *utils.Set // HTML tags to search for keywords
 }
 
 
@@ -43,10 +44,10 @@ const TRIMMED string = "~`!@#$%^&*()[]{}-_+=\\|:;\"'<>,.?/ \n\t"
 const MIN_LEN int = 2
 
 
-func ParseDOMString(dom string, keywordTags *Set) (*Set, *Set) {
+func ParseDOMString(dom string, keywordTags *utils.Set) (*utils.Set, *utils.Set) {
     tkn := html.NewTokenizer(strings.NewReader(dom))
-    unique := NewSet()
-    links := NewSet()
+    unique := utils.NewSet()
+    links := utils.NewSet()
 
     var parseElement bool
 
@@ -107,7 +108,7 @@ func Crawl(job *CrawlJob, db *sql.DB) error {
 
     keywords, links := ParseDOMString(string(pageBytes), job.KeywordTags)
 
-    webpage := Webpage{job.Url, hash, keywords.Slice(), links.Slice()}
+    webpage := graph.Webpage{job.Url, hash, keywords.Slice(), links.Slice()}
 
-    return InsertCrawlResult(db, &webpage)
+    return graph.InsertCrawlResult(db, &webpage)
 }

@@ -3,7 +3,7 @@
 // Use of this source code is governed by the Apache-2.0 License.
 // Full text can be found in the LICENSE file
 
-package main
+package utils
 
 type Set struct {
     list map[string]struct{} // empty structs occupy 0 memory

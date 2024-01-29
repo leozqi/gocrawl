@@ -1,13 +1,10 @@
 // Copyright (C) 2024 Leo Qi <leo@leozqi.com>
-//
-// Use of this source code is governed by the Apache-2.0 License.
-// Full text can be found in the LICENSE file
 
-// Vendors dpapathanasiou/simple graph
+// dpapathanasiou/simple graph
 // Copyright (c) Denis Papathanasiou
-// Used under the terms of the MIT License
+// Used under terms of the MIT License
 
-package main
+package graph
 
 import (
     "encoding/json"

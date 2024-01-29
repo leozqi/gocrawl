@@ -1,11 +1,19 @@
+// Copyright (C) 2024 Leo Qi <leo@leozqi.com>
+
 package main
 
 import (
-	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
-	"log"
+    "database/sql"
     "flag"
+    "log"
+
+    _ "github.com/mattn/go-sqlite3"
+
+    "gocrawl/internal/crawler"
+    "gocrawl/internal/graph"
+    "gocrawl/internal/utils"
 )
+
 
 func main() {
     // Get command line flags
@@ -20,18 +28,18 @@ func main() {
     defer db.Close()
 
     // Prepare jobs
-    var job CrawlJob
+    var job crawler.CrawlJob
     job.Url = *urlCmd
-    job.KeywordTags = NewSet()
+    job.KeywordTags = utils.NewSet()
     job.KeywordTags.AddMulti("p")
 
     // Attempt to initialize the webcrawler table
-    if InitDbFile(db) != nil {
+    if graph.InitDbFile(db) != nil {
         log.Printf("%q: %s\n", err, "could not initialize database table")
         return
     }
 
-    err = Crawl(&job, db)
+    err = crawler.Crawl(&job, db)
     if err != nil {
         log.Fatal(err)
     }
